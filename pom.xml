@@ -1,55 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven- 
+                             4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.progressoft.devops</groupId>
   <artifactId>assignment</artifactId>
-  <version>230503-92285f8a</version>
-
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.4.RELEASE</version>
-  </parent>
+  <version>1.0-SNAPSHOT</version>
 
   <properties>
-    <java.version>1.8</java.version>
-    <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
-        <revision>${revisionU}</revision>
+    <revision>1.0-SNAPSHOT</revision>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.19</version>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-registry-prometheus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -57,47 +25,20 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <includeSystemScope>true</includeSystemScope>
-          <executable>false</executable>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>${maven-jar-plugin.version}</version>
+        <version>3.2.0</version>
         <configuration>
           <archive>
             <manifest>
-              <mainClass>${start-class}</mainClass>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.progressoft.devops.App</mainClass>
             </manifest>
           </archive>
         </configuration>
       </plugin>
-      
-      <plugin>
-  <groupId>org.codehaus.mojo</groupId>
-  <artifactId>versions-maven-plugin</artifactId>
-  <version>2.7</version>
-  <executions>
-    <execution>
-      <id>set-version</id>
-      <phase>validate</phase>
-      <goals>
-        <goal>set</goal>
-      </goals>
-      <configuration>
-        <newVersion>${revision}</newVersion>
-        <generateBackupPoms>false</generateBackupPoms>
-      </configuration>
-    </execution>
-  </executions>
-      </plugin>
-
     </plugins>
   </build>
-
 </project>
+
 
