@@ -77,10 +77,11 @@
       </execution>
     </executions>
     <configuration>
-      <dateFormat>yyyyMMdd-HHmmss</dateFormat>
+      <dateFormat>yyyyMMdd</dateFormat>
       <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
       <abbrev>8</abbrev>
     </configuration>
+   
   </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -90,8 +91,9 @@
                     <executable>false</executable>
                 </configuration>
             </plugin>
+   
         </plugins>
-            <finalName>${project.artifactId}-${git.commit.time}-${git.commit.id.abbrev}</finalName>
+            <finalName>${git.commit.time}-${git.commit.id.abbrev}</finalName>
     </build>
 
 
