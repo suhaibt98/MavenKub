@@ -57,6 +57,31 @@
 
     <build>
         <plugins>
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>versions-maven-plugin</artifactId>
+      <version>2.7</version>
+      <configuration>
+        <generateBackupPoms>false</generateBackupPoms>
+      </configuration>
+    </plugin>
+      <plugin>
+    <groupId>pl.project13.maven</groupId>
+    <artifactId>git-commit-id-plugin</artifactId>
+    <version>4.0.0</version>
+    <executions>
+      <execution>
+        <goals>
+          <goal>revision</goal>
+        </goals>
+      </execution>
+    </executions>
+    <configuration>
+      <dateFormat>yyyyMMdd-HHmmss</dateFormat>
+      <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+      <abbrev>8</abbrev>
+    </configuration>
+  </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -66,7 +91,9 @@
                 </configuration>
             </plugin>
         </plugins>
+            <finalName>${project.artifactId}-${git.commit.time}-${git.commit.id.abbrev}</finalName>
     </build>
+
 
 </project>
 
