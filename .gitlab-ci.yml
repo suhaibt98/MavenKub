@@ -1,0 +1,18 @@
+build:
+  stage: build
+  tags:
+    - suhaib
+  
+  before_script:
+    - export COMMIT_DATE=$(git show -s --format=%cd --date=format:"%y%m%d" $CI_COMMIT_SHA)
+    - export COMMIT_SHA=$(echo $CI_COMMIT_SHORT_SHA)
+    - export NEW_VERSION="$COMMIT_DATE-$COMMIT_SHA"
+    - echo "NEW_VERSION= $NEW_VERSION"
+  script:
+    - mvn versions:set -DnewVersion=$NEW_VERSION
+    - mvn clean package
+  artifacts:
+    paths:
+      - target/
+    name: "ci/cd practice"
+  allow_failure: false
