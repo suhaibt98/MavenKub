@@ -91,6 +91,12 @@
       <configuration>
         <finalName>${git.commit.time}-${git.commit.id.abbrev}</finalName>
         <archive>
+        <manifest>
+                    <mainClass>myproject.Main</mainClass>
+                    <addClasspath>true</addClasspath>
+                    <classpathPrefix>lib/</classpathPrefix>
+          </manifest>
+                <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
           <manifestEntries>
             <Git-Commit-Id>${git.commit.id}</Git-Commit-Id>
             <Git-Commit-Time>${git.commit.time}</Git-Commit-Time>
@@ -105,6 +111,22 @@
         <includeSystemScope>true</includeSystemScope>
         <executable>false</executable>
       </configuration>
+    </plugin>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                </configuration>
+            </execution>
+        </executions>
     </plugin>
   </plugins>
 </build>
