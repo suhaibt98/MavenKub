@@ -9,4 +9,4 @@ VERSION="$LAST_COMMIT_DATE-$COMMIT_HASH"
 echo "Updating application version to $VERSION"
 
 
-
+//
