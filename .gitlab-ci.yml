@@ -22,9 +22,6 @@ build:
 
 dockerize:
   stage: dockerize
-  image: docker:20
-  services:
-    - docker:20-dind
   tags:
     - suhaib
   script:
