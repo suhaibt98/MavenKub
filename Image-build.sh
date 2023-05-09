@@ -25,5 +25,5 @@ fi
 docker tag $IMAGE_ID suhaibtelfah/mavenproject:$IMAGE_TAG
 docker push suhaibtelfah/mavenproject:$IMAGE_TAG 
 echo "Starting Docker container with tag: $IMAGE_TAG"
-docker run -p 9090:8080 -e SPRING_PROFILES_ACTIVE=h2 -e JAVA_OPTS='-Xmx512m' mavenproject:$IMAGE_TAG
+docker run -itd --network host -p 8090:8080 -e SPRING_PROFILES_ACTIVE=h2 -e JAVA_OPTS='-Xmx512m' mavenproject:$IMAGE_TAG
 
