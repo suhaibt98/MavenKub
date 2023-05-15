@@ -1,67 +1,51 @@
+---
 stages:
-  - build  # Stage for building the project
-  - dockerize  # Stage for Dockerizing the application
-  - deploy  # Stage for deploying the Kubernetes environment
-  - cleanup  # Stage for cleaning up the Kubernetes environment
-
+  - build
+  - dockerize
+  - deploy
+  - cleanup
 build:
-  stage: build  # Specifies the stage as "build"
+  stage: build
   tags:
-    - suhaib  # Specifies the runner tags to be used for this stage
-  
+    - suhaib
   before_script:
-    - export COMMIT_DATE=$(git show -s --format=%cd --date=format:"%y%m%d" $CI_COMMIT_SHA)  # Export the commit date from the latest commit
-    - export COMMIT_SHA=$(echo $CI_COMMIT_SHORT_SHA)  # Export the short commit SHA
-    - export NEW_VERSION="$COMMIT_DATE-$COMMIT_SHA"  # Create a new version based on the commit date and SHA
-    - echo "NEW_VERSION= $NEW_VERSION"  # Print the new version
-  
+    - export COMMIT_DATE=$(git show -s --format=%cd --date=format:"%y%m%d"
+      $CI_COMMIT_SHA)
+    - export COMMIT_SHA=$(echo $CI_COMMIT_SHORT_SHA)
+    - export NEW_VERSION="$COMMIT_DATE-$COMMIT_SHA"
+    - echo "NEW_VERSION= $NEW_VERSION"
   script:
-    - mvn versions:set -DnewVersion=$NEW_VERSION  # Set the project's new version using Maven
-    - mvn clean package  # Clean and package the project using Maven
-  
+    - mvn versions:set -DnewVersion=$NEW_VERSION
+    - mvn clean package
   artifacts:
     paths:
-      - target/  # Specify the target directory as an artifact
-    name: "ci/cd practice"  # Name the artifacts
-  
-  allow_failure: false  # Do not allow this stage to fail
-
+      - target/
+    name: ci/cd practice
+  allow_failure: false
 dockerize:
-  stage: dockerize  # Specifies the stage as "dockerize"
+  stage: dockerize
   tags:
-    - suhaib  # Specifies the runner tags to be used for this stage
-  
+    - suhaib
   script:
-    - LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=format:'%y%m%d')  # Get the date of the last commit
-    - COMMIT_HASH=$(git rev-parse --short=8 HEAD)  # Get the short SHA of the latest commit
-    - IMAGE_TAG="$LAST_COMMIT_DATE-$COMMIT_HASH"  # Create a unique image tag based on the commit date and SHA
-    - IMAGE_ID=$(docker images -q | head -n 1)  # Get the ID of the latest Docker image
-    
-    - mvn clean package  # Clean and package the project using Maven
-    - echo "IMAGE_TAG = $IMAGE_TAG"  # Print the image tag
-    
-    # Build the Docker image with the dynamic image tag
+    - LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=format:'%y%m%d')
+    - COMMIT_HASH=$(git rev-parse --short=8 HEAD)
+    - IMAGE_TAG="$LAST_COMMIT_DATE-$COMMIT_HASH"
+    - IMAGE_ID=$(docker images -q | head -n 1)
+    - mvn clean package
+    - echo "IMAGE_TAG = $IMAGE_TAG"
     - echo "Building Docker image with tag $IMAGE_TAG"
-    - docker build --build-arg IMAGE_TAG=$IMAGE_TAG -t mavenproject:$IMAGE_TAG .
-    
-    # Check if the image was successfully built
-    - if [[ "$(docker images -q mavenproject:$IMAGE_TAG 2> /dev/null)" == "" ]]; then
-        echo "ERROR Failed to build Docker image with tag $IMAGE_TAG"
-        exit 1
-      fi
-    
-    # Push Docker image to Docker Hub
+    - >-
+      docker build --build-arg IMAGE_TAG=$IMAGE_TAG -t mavenproject:$IMAGE_TAG .
+
+      if [[ "$(docker images -q mavenproject:$IMAGE_TAG 2> /dev/null)" == "" ]]; then echo "ERROR Failed to build Docker image with tag $IMAGE_TAG" exit 1 fi    # Check if the image was successfully built    
     - docker login -u suhaibtelfah -p Suhaib079??!
     - docker tag $IMAGE_ID suhaibtelfah/mavenproject:$IMAGE_TAG
     - docker push suhaibtelfah/mavenproject:$IMAGE_TAG
-
 deploy_branch:
-  stage: deploy  # Specifies the stage as "deploy"
+  stage: deploy
   script:
-    - kubectl create namespace $CI_COMMIT_REF_NAME  # Create a new namespace using the branch name
-    # Deploy your Kubernetes resources to the newly created namespace
-
+    - kubectl create namespace $CI_COMMIT_REF_NAME
 cleanup_branch:
-  stage: cleanup  # Specifies the stage as "cleanup"
+  stage: cleanup
   script:
-    - kubectl delete namespace $CI_COMMIT_REF_NAME  # Delete the namespace associated
+    - kubectl delete namespace $CI_COMMIT_REF_NAME
