@@ -1,0 +1,37 @@
+apiVersion: apps/v1                                      # Defines the API version for the Kubernetes object
+kind: Deployment                                         # Specifies the kind of Kubernetes object as a Deployment
+metadata:
+  name: mysql                                            # Specifies the name of the Deployment
+spec:
+  replicas: 1                                            # Sets the number of desired replicas for the Deployment
+  selector:
+    matchLabels:
+      app: mysql                                         # Selects the pods with labels matching 'app: mysql'
+  template:
+    metadata:
+      labels:
+        app: mysql                                       # Labels the pods with 'app: mysql'
+    spec:
+      containers:
+        - name: mysql                                    # Specifies the name of the container
+          image: mysql:latest                            # Specifies the Docker image for the container
+          ports:
+            - containerPort: 3306                        # Sets the container port for MySQL
+          env:
+            - name: MYSQL_ROOT_USERNAME                  # Sets the environment variable for MySQL root username
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret                      # Specifies the name of the Secret containing the value
+                  key: MYSQL-root-username                # Specifies the key within the Secret for the value
+            - name: MYSQL_ROOT_PASSWORD                  # Sets the environment variable for MySQL root password
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret                      # Specifies the name of the Secret containing the value
+                  key: MYSQL-root-password                # Specifies the key within the Secret for the value
+          volumeMounts:
+            - name: mysql-persistent-storage              # Specifies the name of the volume mount
+              mountPath: /var/lib/mysql                   # Sets the mount path for the persistent storage
+      volumes:
+        - name: mysql-persistent-storage                  # Specifies the name of the volume
+          persistentVolumeClaim:
+            claimName: mysql-pvc                          # Specifies the name of the PersistentVolumeClaim

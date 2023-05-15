@@ -3,3 +3,5 @@
 .gitignore
 */target
 README.md
+*/k8s/minikube
+
