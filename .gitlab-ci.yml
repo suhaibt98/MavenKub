@@ -53,7 +53,7 @@ deploy-to-minikube:
     - docker build -t my-app .
     # Create a new namespace for the branch
     - kubectl create namespace $CI_COMMIT_REF_NAME
-    # Apply the Kubernetes manifests for the app and database
+    # Apply the Kubernetes manifests for the app and database//s
     - kubectl apply -f kubernetes/MYSQL_secret.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f kubernetes/MYSQL_configmap.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f kubernetes/assignment-tls-secret.yaml -n $CI_COMMIT_REF_NAME
