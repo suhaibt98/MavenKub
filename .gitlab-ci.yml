@@ -40,9 +40,13 @@ dockerize:  # Dockerize stage
     - docker push suhaibtelfah/mavenproject:$IMAGE_TAG  # Push the Docker image to the registry
 deploy_branch:  # Deploy stage
   stage: deploy
+  tags:
+    - suhaib
   script:
     - kubectl create namespace $CI_COMMIT_REF_NAME  # Create a Kubernetes namespace based on the branch name
 cleanup_branch:  # Cleanup stage
   stage: cleanup
+  tags:
+    - suhaib
   script:
     - kubectl delete namespace $CI_COMMIT_REF_NAME  # Delete the Kubernetes namespace based on the branch name
