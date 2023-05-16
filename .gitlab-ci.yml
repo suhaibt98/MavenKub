@@ -61,6 +61,7 @@ deploy-to-minikube:
     - kubectl apply -f assignment-tls-secret.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f MySQL_Service.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f MYSQL-deployment.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f mysql-pvc.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f assignment-service.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
     - sleep 60
