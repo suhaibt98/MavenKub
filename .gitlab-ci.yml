@@ -63,8 +63,10 @@ deploy-to-minikube:
     - kubectl apply -f MYSQL-deployment.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f assignment-service.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
+    - sleep 60
     - kubectl apply -f assignment-ingress.yaml -n $CI_COMMIT_REF_NAME
     - echo $CI_COMMIT_REF_NAME    
+    - sleep 60
     - kubectl get all -n $CI_COMMIT_REF_NAME
     - kubectl get ingress -n $CI_COMMIT_REF_NAME
 
