@@ -53,6 +53,9 @@ deploy-to-minikube:
     # Create a new namespace for the branch
     - kubectl create namespace $CI_COMMIT_REF_NAME
     # Apply the Kubernetes manifests for the app and database//s
+    - ls
+    - cd /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/k8s
+    - ls
     - kubectl apply -f kubernetes/MYSQL_secret.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f kubernetes/MYSQL_configmap.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f kubernetes/assignment-tls-secret.yaml -n $CI_COMMIT_REF_NAME
@@ -61,7 +64,7 @@ deploy-to-minikube:
     - kubectl apply -f kubernetes/assignment-service.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f kubernetes/assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f kubernetes/assignment-ingress.yaml -n $CI_COMMIT_REF_NAME
-
+    
 
   # Define the environment for this job, with a name and URL
   environment:
