@@ -41,6 +41,8 @@ dockerize:  # Dockerize stage
 # Define a job named "deploy-to-minikube" with the stage "deploy"
 deploy-to-minikube:
   stage: deploy
+  tags:
+    - suhaib
   # Define the script to be run for this job
   script:
     # Start Minikube
