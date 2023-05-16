@@ -1,49 +1,48 @@
 ---
-stages:
+stages:  # Define stages for the pipeline
   - build
   - dockerize
   - deploy
   - cleanup
-build:
+build:  # Build stage
   stage: build
   tags:
     - suhaib
   before_script:
-    - export COMMIT_DATE=$(git show -s --format=%cd --date=format:"%y%m%d"
-      $CI_COMMIT_SHA)
-    - export COMMIT_SHA=$(echo $CI_COMMIT_SHORT_SHA)
-    - export NEW_VERSION="$COMMIT_DATE-$COMMIT_SHA"
-    - echo "NEW_VERSION= $NEW_VERSION"
+    - export COMMIT_DATE=$(git show -s --format=%cd --date=format:"%y%m%d" $CI_COMMIT_SHA)  # Get the commit date and format it
+    - export COMMIT_SHA=$(echo $CI_COMMIT_SHORT_SHA)  # Get the short commit SHA
+    - export NEW_VERSION="$COMMIT_DATE-$COMMIT_SHA"  # Create a new version based on commit date and SHA
+    - echo "NEW_VERSION= $NEW_VERSION"  # Print the new version
   script:
-    - mvn versions:set -DnewVersion=$NEW_VERSION
-    - mvn clean package
+    - mvn versions:set -DnewVersion=$NEW_VERSION  # Set the new version in Maven
+    - mvn clean package  # Clean and package the Maven project
   artifacts:
     paths:
-      - target/
-    name: ci/cd practice
+      - target/  # Specify the artifacts to be saved
+    name: ci/cd practice  # Name for the artifacts
   allow_failure: false
-dockerize:
+dockerize:  # Dockerize stage
   stage: dockerize
   tags:
     - suhaib
   script:
-    - LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=format:'%y%m%d')
-    - COMMIT_HASH=$(git rev-parse --short=8 HEAD)
-    - IMAGE_TAG="$LAST_COMMIT_DATE-$COMMIT_HASH"
-    - IMAGE_ID=$(docker images -q | head -n 1)
-    - mvn clean package
-    - echo "IMAGE_TAG = $IMAGE_TAG"
-    - echo "Building Docker image with tag $IMAGE_TAG"
-      docker build --build-arg IMAGE_TAG=$IMAGE_TAG -t mavenproject:$IMAGE_TAG .
-      if [[ "$(docker images -q mavenproject:$IMAGE_TAG 2> /dev/null)" == "" ]]; then echo "ERROR Failed to build Docker image with tag $IMAGE_TAG" exit 1 fi    # Check if the image was successfully built    
-    - docker login -u suhaibtelfah -p Suhaib079??!
-    - docker tag $IMAGE_ID suhaibtelfah/mavenproject:$IMAGE_TAG
-    - docker push suhaibtelfah/mavenproject:$IMAGE_TAG
-deploy_branch:
+    - LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=format:'%y%m%d')  # Get the date of the last commit
+    - COMMIT_HASH=$(git rev-parse --short=8 HEAD)  # Get the short commit SHA
+    - IMAGE_TAG="$LAST_COMMIT_DATE-$COMMIT_HASH"  # Create an image tag based on date and SHA
+    - IMAGE_ID=$(docker images -q | head -n 1)  # Get the image ID
+    - mvn clean package  # Clean and package the Maven project
+    - echo "IMAGE_TAG = $IMAGE_TAG"  # Print the image tag
+    - echo "Building Docker image with tag $IMAGE_TAG"  # Print a message
+    - docker build --build-arg IMAGE_TAG=$IMAGE_TAG -t mavenproject:$IMAGE_TAG .  # Build the Docker image with the specified tag
+    - if [[ "$(docker images -q mavenproject:$IMAGE_TAG 2> /dev/null)" == "" ]]; then echo "ERROR Failed to build Docker image with tag $IMAGE_TAG"; exit 1; fi  # Check if the image was successfully built
+    - docker login -u suhaibtelfah -p Suhaib079??!  # Login to Docker registry
+    - docker tag $IMAGE_ID suhaibtelfah/mavenproject:$IMAGE_TAG  # Tag the Docker image
+    - docker push suhaibtelfah/mavenproject:$IMAGE_TAG  # Push the Docker image to the registry
+deploy_branch:  # Deploy stage
   stage: deploy
   script:
-    - kubectl create namespace $CI_COMMIT_REF_NAME
-cleanup_branch:
+    - kubectl create namespace $CI_COMMIT_REF_NAME  # Create a Kubernetes namespace based on the branch name
+cleanup_branch:  # Cleanup stage
   stage: cleanup
   script:
-    - kubectl delete namespace $CI_COMMIT_REF_NAME
+    - kubectl delete namespace $CI_COMMIT_REF_NAME  # Delete the Kubernetes namespace based on the branch name
