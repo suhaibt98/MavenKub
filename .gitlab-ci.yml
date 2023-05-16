@@ -46,6 +46,7 @@ deploy-to-minikube:
   # Define the script to be run for this job
   script:
     # Start Minikube
+    - minikube delete
     - minikube start
     - systemctl enable kubelet.service
     # Use Minikube's Docker daemon
