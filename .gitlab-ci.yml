@@ -38,15 +38,50 @@ dockerize:  # Dockerize stage
     - docker login -u suhaibtelfah -p Suhaib079??!  # Login to Docker registry
     - docker tag $IMAGE_ID suhaibtelfah/mavenproject:$IMAGE_TAG  # Tag the Docker image
     - docker push suhaibtelfah/mavenproject:$IMAGE_TAG  # Push the Docker image to the registry
-deploy_branch:  # Deploy stage
+# Define a job named "deploy-to-minikube" with the stage "deploy"
+deploy-to-minikube:
   stage: deploy
-  tags:
-    - suhaib
+  # Define the script to be run for this job
   script:
-    - kubectl create namespace $CI_COMMIT_REF_NAME  # Create a Kubernetes namespace based on the branch name
+    # Start Minikube
+    - minikube start
+    # Use Minikube's Docker daemon
+    - eval $(minikube docker-env)
+    # Build the Docker image
+    - docker build -t my-app .
+    # Create a new namespace for the branch
+    - kubectl create namespace $CI_COMMIT_REF_NAME
+    # Apply the Kubernetes manifests for the app and database
+    - kubectl apply -f kubernetes/MYSQL_secret.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f kubernetes/MYSQL_configmap.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f kubernetes/assignment-tls-secret.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f kubernetes/MySQL_Service.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f kubernetes/MYSQL-deployment.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f kubernetes/assignment-service.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f kubernetes/assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f kubernetes/assignment-ingress.yaml -n $CI_COMMIT_REF_NAME
+
+
+  # Define the environment for this job, with a name and URL
+  environment:
+    name: minikube-$CI_COMMIT_REF_NAME
+    url: http://$CI_COMMIT_REF_NAME.suhaibassignment.com
+  # Only run this job for branches
+  only:
+    - branches
+  # Do not run this job for the master branch
+  except:
+    - master
+
 cleanup_branch:  # Cleanup stage
   stage: cleanup
   tags:
     - suhaib
   script:
     - kubectl delete namespace $CI_COMMIT_REF_NAME  # Delete the Kubernetes namespace based on the branch name
+  
+  only:
+    - branches
+  except:
+    - master
+  when: manual
