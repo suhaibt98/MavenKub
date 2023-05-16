@@ -65,6 +65,8 @@ deploy-to-minikube:
     - kubectl apply -f assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
     - kubectl apply -f assignment-ingress.yaml -n $CI_COMMIT_REF_NAME
     - echo $CI_COMMIT_REF_NAME    
+    - kubectl get all -n $CI_COMMIT_REF_NAME
+    - kubectl get ingress -n $CI_COMMIT_REF_NAME
 
   # Define the environment for this job, with a name and URL
   environment:
