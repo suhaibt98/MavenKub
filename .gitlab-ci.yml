@@ -56,14 +56,14 @@ deploy-to-minikube:
     - ls
     - cd /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/k8s
     - ls
-    - kubectl apply -f kubernetes/MYSQL_secret.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f kubernetes/MYSQL_configmap.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f kubernetes/assignment-tls-secret.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f kubernetes/MySQL_Service.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f kubernetes/MYSQL-deployment.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f kubernetes/assignment-service.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f kubernetes/assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f kubernetes/assignment-ingress.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f MYSQL_secret.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f MYSQL_configmap.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f assignment-tls-secret.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f MySQL_Service.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f MYSQL-deployment.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f assignment-service.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
+    - kubectl apply -f assignment-ingress.yaml -n $CI_COMMIT_REF_NAME
     
 
   # Define the environment for this job, with a name and URL
