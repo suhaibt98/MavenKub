@@ -48,7 +48,6 @@ deploy-to-minikube:
     # Start Minikube
     - minikube delete
     - minikube start
-    - systemctl enable kubelet.service
     # Use Minikube's Docker daemon
     - eval $(minikube docker-env)
     # Create a new namespace for the branch
