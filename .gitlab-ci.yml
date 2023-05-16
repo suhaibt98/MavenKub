@@ -47,7 +47,7 @@ deploy-to-minikube:
   script:
     # Start Minikube
     - minikube delete
-    - minikube start
+    - minikube start --addons=ingress
     # Use Minikube's Docker daemon
     - eval $(minikube docker-env)
     # Create a new namespace for the branch
@@ -72,9 +72,6 @@ deploy-to-minikube:
     - kubectl get ingress -n $CI_COMMIT_REF_NAME
 
   # Define the environment for this job, with a name and URL
-  environment:
-    name: minikube-$CI_COMMIT_REF_NAME
-    url: http://$CI_COMMIT_REF_NAME.suhaibassignment.com
   # Only run this job for branches
   only:
     - branches
