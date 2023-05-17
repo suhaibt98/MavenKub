@@ -54,23 +54,9 @@ deploy-to-minikube:
     - kubectl create namespace $CI_COMMIT_REF_NAME
     # Apply the Kubernetes manifests for the app and database//s
     - ls
-    - cd /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/k8s
+    - cd /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/practicehelm
     - ls
-    - kubectl apply -f MYSQL_secret.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f MYSQL_configmap.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f assignment-tls-secret.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f MySQL_Service.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f MYSQL-deployment.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f mysql-pvc.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f assignment-service.yaml -n $CI_COMMIT_REF_NAME
-    - kubectl apply -f assignment-deployment.yaml -n $CI_COMMIT_REF_NAME
-    - sleep 60
-    - kubectl apply -f assignment-ingress.yaml -n $CI_COMMIT_REF_NAME
-    - echo $CI_COMMIT_REF_NAME    
-    - sleep 60
-    - kubectl get all -n $CI_COMMIT_REF_NAME
-    - kubectl get ingress -n $CI_COMMIT_REF_NAME
-
+    - helm install practicehelm-1 /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/practicehelm  -n $CI_COMMIT_REF_NAME
   # Define the environment for this job, with a name and URL
   # Only run this job for branches
   only:
@@ -84,7 +70,7 @@ cleanup_branch:  # Cleanup stage
   tags:
     - suhaib
   script:
-    - kubectl delete namespace $CI_COMMIT_REF_NAME  # Delete the Kubernetes namespace based on the branch name
+    - helm uninstall practicehelm-1 /home/suhaib/Downloads/devops_sample/practicehelm -n $CI_COMMIT_REF_NAME # Delete the Kubernetes namespace based on the branch name
   
   only:
     - branches

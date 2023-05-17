@@ -1,0 +1,12 @@
+apiVersion: v1                                      # Defines the API version for the Kubernetes object
+kind: PersistentVolumeClaim                         # Specifies the kind of Kubernetes object as a PersistentVolumeClaim
+metadata:
+  name: mysql-pvc                                  # Specifies the name of the PersistentVolumeClaim
+  namespace:  {{ .Values.namespace }}
+
+spec:
+  accessModes:
+    - ReadWriteOnce                                 # Sets the access mode for the PersistentVolumeClaim
+  resources:
+    requests:
+      storage: 1Gi                                  # Sets the requested storage size for the PersistentVolumeClaim

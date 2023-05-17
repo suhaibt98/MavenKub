@@ -1,0 +1,57 @@
+apiVersion: apps/v1    # Defines the API version for the Kubernetes object
+kind: Deployment       # Specifies the kind of Kubernetes object as a Deployment
+metadata:
+  name: {{ .Values.appName }}-deployment      # Specifies the name of the Deployment
+  namespace:  {{ .Values.namespace }}
+spec:
+  replicas: 1         # Sets the number of replicas for the Deployment
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}          # Selects the pods with labels matching 'app: assignment'
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}          # Sets the labels for the pods in the Deployment
+    spec:
+      containers:
+        - name: {{ .Values.appName }}                              # Specifies the name of the container
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}" # Specifies the container image to be used
+          ports:
+            - containerPort: 8090                 # Specifies the container port to be exposed
+          readinessProbe:
+            httpGet:
+              path: /actuator/health          # Set the path for the health endpoint
+              port: 8090                      # Set the port on which the endpoint is exposed
+            initialDelaySeconds: 10            # Wait 10 seconds before performing the first readiness probe
+            periodSeconds: 5                   # Perform the readiness probe every 5 seconds
+          livenessProbe:
+            httpGet:
+              path: /actuator/health          # Set the path for the health endpoint
+              port: 8090                      # Set the port on which the endpoint is exposed
+            initialDelaySeconds: 15            # Wait 15 seconds before performing the first liveness probe
+            periodSeconds: 10                  # Perform the liveness probe every 10 seconds
+            #kubectl exec {{ .Values.appName }}-654587fd97-c5wft -- wget -O- http://localhost:8090/actuator/health
+
+          resources:
+            requests:
+              memory: "1Gi"          # Set the requested memory
+              cpu: "500m"            # Set the requested CPU
+            limits:
+              memory: "2Gi"          # Set the maximum memory limit
+              cpu: "1"               # Set the maximum CPU limit
+          env:
+            - name: MYSQL_INITDB_ROOT_USERNAME        # Sets the environment variable name
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret                      # Specifies the name of the secret
+                  key: MYSQL-root-username                # Specifies the key in the secret to retrieve the value from
+            - name: MYSQL_INITDB_ROOT_PASSWORD           # Sets the environment variable name
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret                      # Specifies the name of the secret
+                  key: MYSQL-root-password                # Specifies the key in the secret to retrieve the value from
+            - name: DATABASE_URL                         # Sets the environment variable name
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret                      # Specifies the name of the secret
+                  key: database_url                        # Specifies the key in the secret to retrieve the value from
