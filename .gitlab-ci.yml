@@ -4,61 +4,77 @@ stages:  # Define stages for the pipeline
   - dockerize
   - deploy
   - cleanup
+
 build:  # Build stage
   stage: build
   tags:
     - suhaib
   before_script:
-    - export COMMIT_DATE=$(git show -s --format=%cd --date=format:"%y%m%d" $CI_COMMIT_SHA)  # Get the commit date and format it
-    - export COMMIT_SHA=$(echo $CI_COMMIT_SHORT_SHA)  # Get the short commit SHA
-    - export NEW_VERSION="$COMMIT_DATE-$COMMIT_SHA"  # Create a new version based on commit date and SHA
-    - echo "NEW_VERSION= $NEW_VERSION"  # Print the new version
+    # Retrieve commit date and format it
+    - export COMMIT_DATE=$(git show -s --format=%cd --date=format:"%y%m%d" $CI_COMMIT_SHA)
+    # Get the short commit SHA
+    - export COMMIT_SHA=$(echo $CI_COMMIT_SHORT_SHA)
+    # Create a new version based on commit date and SHA
+    - export NEW_VERSION="$COMMIT_DATE-$COMMIT_SHA"
+    # Print the new version
+    - echo "NEW_VERSION= $NEW_VERSION"
   script:
-    - mvn versions:set -DnewVersion=$NEW_VERSION  # Set the new version in Maven
-    - mvn clean package  # Clean and package the Maven project
+    # Set the new version in Maven
+    - mvn versions:set -DnewVersion=$NEW_VERSION
+    # Clean and package the Maven project
+    - mvn clean package
   artifacts:
     paths:
-      - target/  # Specify the artifacts to be saved
-    name: ci/cd practice  # Name for the artifacts
+      - target/
+    name: ci/cd practice
   allow_failure: false
+
 dockerize:  # Dockerize stage
   stage: dockerize
   tags:
     - suhaib
   script:
-    - LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=format:'%y%m%d')  # Get the date of the last commit
-    - COMMIT_HASH=$(git rev-parse --short=8 HEAD)  # Get the short commit SHA
-    - IMAGE_TAG="$LAST_COMMIT_DATE-$COMMIT_HASH"  # Create an image tag based on date and SHA
-    - IMAGE_ID=$(docker images -q | head -n 1)  # Get the image ID
-    - mvn clean package  # Clean and package the Maven project
-    - echo "IMAGE_TAG = $IMAGE_TAG"  # Print the image tag
-    - echo "Building Docker image with tag $IMAGE_TAG"  # Print a message
-    - docker build --build-arg IMAGE_TAG=$IMAGE_TAG -t mavenproject:$IMAGE_TAG .  # Build the Docker image with the specified tag
-    - if [[ "$(docker images -q mavenproject:$IMAGE_TAG 2> /dev/null)" == "" ]]; then echo "ERROR Failed to build Docker image with tag $IMAGE_TAG"; exit 1; fi  # Check if the image was successfully built
-    - docker login -u suhaibtelfah -p Suhaib079??!  # Login to Docker registry
-    - docker tag $IMAGE_ID suhaibtelfah/mavenproject:$IMAGE_TAG  # Tag the Docker image
-    - docker push suhaibtelfah/mavenproject:$IMAGE_TAG  # Push the Docker image to the registry
-# Define a job named "deploy-to-minikube" with the stage "deploy"
-deploy-to-minikube:
+    # Get the date of the last commit
+    - LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=format:'%y%m%d')
+    # Get the short commit SHA
+    - COMMIT_HASH=$(git rev-parse --short=8 HEAD)
+    # Create an image tag based on date and SHA
+    - IMAGE_TAG="$LAST_COMMIT_DATE-$COMMIT_HASH"
+    # Get the image ID
+    - IMAGE_ID=$(docker images -q | head -n 1)
+    # Clean and package the Maven project
+    - mvn clean package
+    # Print the image tag
+    - echo "IMAGE_TAG = $IMAGE_TAG"
+    # Print a message
+    - echo "Building Docker image with tag $IMAGE_TAG"
+    # Build the Docker image with the specified tag
+    - docker build --build-arg IMAGE_TAG=$IMAGE_TAG -t mavenproject:$IMAGE_TAG .
+    # Check if the image was successfully built
+    - if [[ "$(docker images -q mavenproject:$IMAGE_TAG 2> /dev/null)" == "" ]]; then echo "ERROR Failed to build Docker image with tag $IMAGE_TAG"; exit 1; fi
+    # Login to Docker registry
+    - docker login -u suhaibtelfah -p Suhaib079??!
+    # Tag the Docker image
+    - docker tag $IMAGE_ID suhaibtelfah/mavenproject:$IMAGE_TAG
+    # Push the Docker image to the registry
+    - docker push suhaibtelfah/mavenproject:$IMAGE_TAG
+
+deploy-to-minikube:  # Define a job named "deploy-to-minikube" with the stage "deploy"
   stage: deploy
   tags:
     - suhaib
-  # Define the script to be run for this job
   script:
     # Start Minikube
     - minikube delete
     - minikube start --addons=ingress
-    # Use Minikube's Docker daemon
-    - eval $(minikube docker-env)
     # Create a new namespace for the branch
     - kubectl create namespace $CI_COMMIT_REF_NAME
-    # Apply the Kubernetes manifests for the app and database//s
+    # Apply the Kubernetes manifests for the app and database
     - ls
     - cd /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/practicehelm
     - ls
     - sleep 60
-    - helm install practicehelm-1 /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/practicehelm  -n $CI_COMMIT_REF_NAME
-  # Define the environment for this job, with a name and URL
+    - helm install practicehelm-1 /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/practicehelm -n $CI_COMMIT_REF_NAME
   # Only run this job for branches
   only:
     - branches
@@ -71,10 +87,12 @@ cleanup_branch:  # Cleanup stage
   tags:
     - suhaib
   script:
-    - helm uninstall practicehelm-1 /home/suhaib/Downloads/devops_sample/practicehelm -n $CI_COMMIT_REF_NAME # Delete the Kubernetes namespace based on the branch name
-  
+    # Delete the Kubernetes namespace based on the branch name
+    - helm uninstall practicehelm-1 /home/suhaib/Downloads/devops_sample/practicehelm -n $CI_COMMIT_REF_NAME
+  # Only run this job for branches
   only:
     - branches
+  # Do not run this job for the master branch
   except:
     - master
   when: manual
