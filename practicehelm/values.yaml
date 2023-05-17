@@ -1,5 +1,5 @@
 appName: assignment
-namespace: default 
+namespace:  
 image:  
   name:  suhaibtelfah/mavenproject
   tag: 230516-a1b44d38
