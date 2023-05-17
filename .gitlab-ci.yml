@@ -56,6 +56,7 @@ deploy-to-minikube:
     - ls
     - cd /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/practicehelm
     - ls
+    - sleep 60
     - helm install practicehelm-1 /home/gitlab-runner/builds/Tsbd7bdz/0/ps.suhaib.telfah/devops-practices/practicehelm  -n $CI_COMMIT_REF_NAME
   # Define the environment for this job, with a name and URL
   # Only run this job for branches
