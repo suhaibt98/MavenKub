@@ -75,3 +75,4 @@ This endpoint provides some health checking capabilities include:
 - /health: Return HTTP 200 with the the word "Up" in response if the application is up and running.
 - /prometheus: provide prometheus endpoint in order to allow prometheus to monitor the application
 
+# MavenKub
